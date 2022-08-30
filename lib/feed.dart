@@ -20,7 +20,7 @@ class _FeedState extends State<Feed> {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('posts')
-              .where('time', isLessThanOrEqualTo: 1)
+              .where('time', isEqualTo: 0)
               .snapshots(),
           builder: (context,
               AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
