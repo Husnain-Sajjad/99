@@ -17,22 +17,25 @@ class _Feed2State extends State<Feed2> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('posts')
-              .where('time', isEqualTo: 0)
-              .snapshots(),
-          builder: (context,
-              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) => Posts(
-                snap: snapshot.data!.docs[index].data(),
-              ),
-            );
-          },
-        ),
-      ),
+          body: Column(
+        children: [
+          //minutes
+          //countdown from 59 to 0
+          Row(
+            children: [
+              Text('59'),
+            ],
+          ),
+
+          //hours
+          //countdown from 23 to 0
+          Row(
+            children: [
+              Text('23'),
+            ],
+          ),
+        ],
+      )),
     );
   }
 }
