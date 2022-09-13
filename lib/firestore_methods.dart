@@ -5,9 +5,7 @@ import 'package:uuid/uuid.dart';
 class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<String> uploadPost(
-    String title,
-  ) async {
+  Future<String> uploadPost(String title, var time) async {
     String res = "some error occurred";
     try {
       String postId = const Uuid().v1();
@@ -16,7 +14,7 @@ class FirestoreMethods {
         postId: postId,
         datePublished: DateTime.now(),
         title: title,
-        time: 0,
+        time: time,
       );
 
       _firestore.collection('posts').doc(postId).set(

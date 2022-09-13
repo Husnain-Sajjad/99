@@ -6,13 +6,21 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'posts.dart';
 
 class Feed extends StatefulWidget {
-  const Feed({Key? key}) : super(key: key);
-
+  const Feed({Key? key, this.durationInDay}) : super(key: key);
+  final durationInDay;
   @override
   State<Feed> createState() => _FeedState();
 }
 
 class _FeedState extends State<Feed> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    // print('_FeedState ${widget.durationInDay}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -20,16 +28,19 @@ class _FeedState extends State<Feed> {
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('posts')
-              .where('time', isEqualTo: 0)
+              .where('time', isEqualTo: widget.durationInDay)
               .snapshots(),
           builder: (context,
               AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-            return ListView.builder(
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) => Posts(
-                snap: snapshot.data!.docs[index].data(),
-              ),
-            );
+            // snapshot.data!.docs.length
+            return snapshot.data == null
+                ? const SizedBox()
+                : ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) => Posts(
+                      snap: snapshot.data!.docs[index].data(),
+                    ),
+                  );
           },
         ),
       ),
