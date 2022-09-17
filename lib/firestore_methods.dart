@@ -7,12 +7,13 @@ class FirestoreMethods {
 
   Future<String> uploadPost(String title, var time) async {
     String res = "some error occurred";
+    print(Timestamp.now().toDate());
     try {
       String postId = const Uuid().v1();
 
       Post post = Post(
         postId: postId,
-        datePublished: DateTime.now(),
+        datePublished: FieldValue.serverTimestamp(),
         title: title,
         time: time,
       );

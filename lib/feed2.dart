@@ -18,7 +18,7 @@ class Feed2 extends StatefulWidget {
 }
 
 class _Feed2State extends State<Feed2> {
-  Timer? timer;
+  // Timer? timer;
   var durationForMinutes = 0;
   var durationForHours = 0;
 
@@ -31,7 +31,7 @@ class _Feed2State extends State<Feed2> {
   @override
   void dispose() {
     super.dispose();
-    timer?.cancel();
+    // timer?.cancel();
   }
 
   // _startTimer() {
@@ -55,7 +55,7 @@ class _Feed2State extends State<Feed2> {
           //countdown from 59 to 0
           Row(
             children: [
-              Text('${durationForMinutes}'),
+              Text('${durationForMinutes} hello'),
             ],
           ),
 

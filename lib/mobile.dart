@@ -31,7 +31,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   var oldDurationInDay = 0;
   var durationForMinutes = 0;
   var durationForHours = 0;
-  Timer? timer;
+  // Timer? timer;
   DateTime ntpTime = DateTime.now();
 
   @override
@@ -44,16 +44,14 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   }
 
   void _loadNTPTime() async {
-    setState(() async {
-      ntpTime = await NTP.now();
-    });
+    ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
   }
 
   @override
   void dispose() {
     super.dispose();
     pageController.dispose();
-    timer?.cancel();
+    // timer?.cancel();
   }
 
   void navigationTapped(int page) {
@@ -67,10 +65,11 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   }
 
   _startTimer() {
-    timer = Timer.periodic(const Duration(minutes: 1), (Timer t) {
-      //
-      _getStartTime();
-    });
+    // timer =
+    // Timer.periodic(const Duration(minutes: 1), (Timer t) {
+    //
+    _getStartTime();
+    // });
   }
 
   @override
@@ -79,7 +78,14 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
       appBar: AppBar(actions: [
         Container(
             width: MediaQuery.of(context).size.width,
-            child: Center(child: Text('${ntpTime.toUtc()}')))
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Text('$ntpTime'),
+                Text('$durationInDay')
+              ],
+            )))
       ]),
       // body: ,
       body: AnimatedSwitcher(
@@ -137,8 +143,13 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     );
   }
 
-  _getStartTime() {
-    firestore.collection('startTime').get().then((QuerySnapshot querySnapshot) {
+  _getStartTime() async {
+    ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+    print('current time is: $ntpTime');
+    await firestore
+        .collection('startTime')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
         var timeStr = doc["time"];

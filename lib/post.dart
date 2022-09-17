@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Post {
@@ -5,12 +7,14 @@ class Post {
   final String title;
   int time;
   final datePublished;
+  StreamController<Post>? updatingStream;
 
   Post({
     required this.postId,
     required this.time,
     required this.title,
     required this.datePublished,
+    this.updatingStream,
   });
 
   Map<String, dynamic> toJson() => {
@@ -37,6 +41,7 @@ class Post {
       title: snapshot['title'] ?? "",
       datePublished: snapshot['datePublished'],
       time: snapshot['time'],
+      updatingStream: snapshot['updatingStream'],
     );
   }
 }
