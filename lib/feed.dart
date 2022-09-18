@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/post.dart';
+import 'package:ntp/ntp.dart';
 import 'posts.dart';
 
 class Feed extends StatefulWidget {
@@ -15,10 +16,25 @@ class _FeedState extends State<Feed> {
   List<Post> postsList = [];
   StreamSubscription? loadDataStream;
   StreamController<Post> updatingStream = StreamController.broadcast();
+  Timer? timer;
+  var durationForMinutes = 0;
+  var durationForHours = 0;
   @override
   void initState() {
     super.initState();
     initList();
+    _startTimer();
+  }
+
+  _startTimer() async {
+    timer = Timer.periodic(const Duration(minutes: 1), (Timer t) async {
+      // var dateNow = DateTime.now();
+      var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+      setState(() {
+        durationForMinutes = 59 - ntpTime.minute;
+        durationForHours = 23 - ntpTime.hour;
+      });
+    });
   }
 
   initList() async {
@@ -63,12 +79,26 @@ class _FeedState extends State<Feed> {
     if (loadDataStream != null) {
       loadDataStream!.cancel();
     }
+    timer?.cancel();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      appBar: AppBar(
+        actions: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Text('minutes: ${durationForMinutes}'),
+                Text('hours: ${durationForHours}'),
+              ],
+            ),
+          ),
+        ],
+      ),
       body: ListView.builder(
           itemCount: postsList.length,
           itemBuilder: (context, index) {

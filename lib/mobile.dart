@@ -37,6 +37,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   @override
   void initState() {
     super.initState();
+    isLoading = true;
     pageController = PageController();
     _getStartTime();
     _startTimer();
@@ -74,73 +75,89 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(actions: [
-        Container(
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Text('$ntpTime'),
-                Text('$durationInDay')
-              ],
-            )))
-      ]),
-      // body: ,
-      body: AnimatedSwitcher(
-        duration: const Duration(seconds: 1),
-        child: isLoading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : PageView(
-                physics: const NeverScrollableScrollPhysics(),
-                controller: pageController,
-                onPageChanged: onPageChanged,
-                children: [
-                  Feed(durationInDay: durationInDay),
-                  Feed2(),
-                  AddPost(durationInDay: durationInDay)
+    return isLoading == true
+        ? Scaffold(
+            body: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text("Fetching Data"),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  CircularProgressIndicator(),
                 ],
               ),
-      ),
-      bottomNavigationBar: CupertinoTabBar(
-          inactiveColor: Colors.grey,
-          activeColor: Colors.black,
-          backgroundColor: Color.fromARGB(255, 245, 245, 245),
-          items: [
-            BottomNavigationBarItem(
-              icon: Padding(
-                  padding: const EdgeInsets.only(top: 3.0, right: 0),
-                  // child: Icon(MyFlutterApp.home, size: 23.5),
-                  child: Icon(
-                    Icons.message,
-                  )),
-              label: 'Posts',
+              // color: Colors.white,
             ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                  padding: const EdgeInsets.only(top: 3.0, right: 0),
-                  // child: Icon(MyFlutterApp.home, size: 23.5),
-                  child: Icon(
-                    Icons.message,
-                  )),
-              label: 'Posts 2',
+          )
+        : Scaffold(
+            appBar: AppBar(actions: [
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Text('$ntpTime'),
+                      Text('$durationInDay')
+                    ],
+                  )))
+            ]),
+            // body: ,
+            body: AnimatedSwitcher(
+              duration: const Duration(seconds: 1),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : PageView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: pageController,
+                      onPageChanged: onPageChanged,
+                      children: [
+                        Feed(durationInDay: durationInDay),
+                        Feed2(),
+                        AddPost(durationInDay: durationInDay)
+                      ],
+                    ),
             ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: const EdgeInsets.only(top: 3.0),
-                child: Icon(
-                  Icons.add_circle,
-                ),
-              ),
-              label: 'Add',
-            ),
-          ],
-          currentIndex: _page,
-          onTap: navigationTapped),
-    );
+            bottomNavigationBar: CupertinoTabBar(
+                inactiveColor: Colors.grey,
+                activeColor: Colors.black,
+                backgroundColor: Color.fromARGB(255, 245, 245, 245),
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                        padding: const EdgeInsets.only(top: 3.0, right: 0),
+                        // child: Icon(MyFlutterApp.home, size: 23.5),
+                        child: Icon(
+                          Icons.message,
+                        )),
+                    label: 'Posts',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                        padding: const EdgeInsets.only(top: 3.0, right: 0),
+                        // child: Icon(MyFlutterApp.home, size: 23.5),
+                        child: Icon(
+                          Icons.message,
+                        )),
+                    label: 'Posts 2',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(top: 3.0),
+                      child: Icon(
+                        Icons.add_circle,
+                      ),
+                    ),
+                    label: 'Add',
+                  ),
+                ],
+                currentIndex: _page,
+                onTap: navigationTapped),
+          );
   }
 
   _getStartTime() async {
@@ -203,6 +220,9 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         oldDurationInDay = durationInDay;
         // print('duration.inDays ${duration.inDays}');
       });
+    });
+    setState(() {
+      isLoading = false;
     });
   }
 }
