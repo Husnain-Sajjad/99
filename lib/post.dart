@@ -7,21 +7,23 @@ class Post {
   final String title;
   int time;
   final datePublished;
+  final endDate;
   StreamController<Post>? updatingStream;
 
-  Post({
-    required this.postId,
-    required this.time,
-    required this.title,
-    required this.datePublished,
-    this.updatingStream,
-  });
+  Post(
+      {required this.postId,
+      required this.time,
+      required this.title,
+      required this.datePublished,
+      this.updatingStream,
+      required this.endDate});
 
   Map<String, dynamic> toJson() => {
         "postId": postId,
         "datePublished": datePublished,
         "title": title,
-        "time": time
+        "time": time,
+        "endDate": endDate,
       };
 
   static Post fromSnap(
@@ -41,6 +43,7 @@ class Post {
       title: snapshot['title'] ?? "",
       datePublished: snapshot['datePublished'],
       time: snapshot['time'],
+      endDate: snapshot['endDate'],
       updatingStream: snapshot['updatingStream'],
     );
   }

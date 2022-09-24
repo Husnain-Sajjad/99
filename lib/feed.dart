@@ -19,21 +19,35 @@ class _FeedState extends State<Feed> {
   Timer? timer;
   var durationForMinutes = 0;
   var durationForHours = 0;
+  var durationForSeconds = 0;
+  bool initialized = false;
+
   @override
   void initState() {
     super.initState();
     initList();
+    _initTimer();
     _startTimer();
   }
 
   _startTimer() async {
     timer = Timer.periodic(const Duration(minutes: 1), (Timer t) async {
-      // var dateNow = DateTime.now();
       var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+      // var dateNow = DateTime.now();
       setState(() {
         durationForMinutes = 59 - ntpTime.minute;
         durationForHours = 23 - ntpTime.hour;
+        durationForSeconds = 59 - ntpTime.second;
       });
+    });
+  }
+
+  _initTimer() async {
+    var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+    // if (!initialized)
+    setState(() {
+      durationForMinutes = 59 - ntpTime.minute;
+      durationForHours = 23 - ntpTime.hour;
     });
   }
 
