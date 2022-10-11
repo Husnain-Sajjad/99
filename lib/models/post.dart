@@ -8,6 +8,10 @@ class Post {
   int time;
   final datePublished;
   final endDate;
+  bool isMostLiked;
+  int score;
+  List<dynamic> likes;
+  List<dynamic> dislikes;
   StreamController<Post>? updatingStream;
 
   Post(
@@ -15,14 +19,32 @@ class Post {
       required this.time,
       required this.title,
       required this.datePublished,
+      required this.isMostLiked,
+      required this.score,
+      required this.likes,
+      required this.dislikes,
       this.updatingStream,
-      required this.endDate});
+      required this.endDate}) {
+    if (updatingStream != null) {
+      updatingStream!.stream
+          .where((event) => event.postId == postId)
+          .listen((event) {
+        likes = event.likes;
+        dislikes = event.dislikes;
+        score = event.score;
+      });
+    }
+  }
 
   Map<String, dynamic> toJson() => {
         "postId": postId,
         "datePublished": datePublished,
         "title": title,
         "time": time,
+        "isMostLiked": isMostLiked,
+        "likes": likes,
+        "dislikes": dislikes,
+        "score": score,
         "endDate": endDate,
       };
 
@@ -43,7 +65,11 @@ class Post {
       title: snapshot['title'] ?? "",
       datePublished: snapshot['datePublished'],
       time: snapshot['time'],
+      score: snapshot['score'],
       endDate: snapshot['endDate'],
+      likes: (snapshot['likes'] ?? []).cast<String>(),
+      dislikes: (snapshot['dislikes'] ?? []).cast<String>(),
+      isMostLiked: snapshot['isMostLiked'],
       updatingStream: snapshot['updatingStream'],
     );
   }

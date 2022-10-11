@@ -6,13 +6,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'restart_widget.dart';
-import 'tab_options.dart';
+
 import 'package:ntp/ntp.dart';
 
-import 'add.dart';
-import 'feed.dart';
-import 'feed2.dart';
+import 'other/utils.dart';
+import 'screens/add.dart';
+import 'screens/feed.dart';
 
 class MobileScreenLayout extends StatefulWidget {
   const MobileScreenLayout({Key? key}) : super(key: key);
@@ -94,15 +93,31 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         : Scaffold(
             appBar: AppBar(actions: [
               Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: Center(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Text('$ntpTime'),
-                      Text('$durationInDay')
-                    ],
-                  )))
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        Future.delayed(const Duration(milliseconds: 150), () {
+                          goToLogin(context);
+                        });
+                      },
+                      child:
+                          Container(color: Colors.black, child: Text('Logout')),
+                    ),
+                    Container(
+                        child: Center(
+                            child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Text('$ntpTime'),
+                        Text('$durationInDay'),
+                      ],
+                    ))),
+                  ],
+                ),
+              )
             ]),
             // body: ,
             body: AnimatedSwitcher(
@@ -117,7 +132,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
                       onPageChanged: onPageChanged,
                       children: [
                         Feed(durationInDay: durationInDay),
-                        Feed2(),
+                        // Feed2(),
                         AddPost(durationInDay: durationInDay)
                       ],
                     ),
@@ -136,15 +151,15 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
                         )),
                     label: 'Posts',
                   ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                        padding: const EdgeInsets.only(top: 3.0, right: 0),
-                        // child: Icon(MyFlutterApp.home, size: 23.5),
-                        child: Icon(
-                          Icons.message,
-                        )),
-                    label: 'Posts 2',
-                  ),
+                  // BottomNavigationBarItem(
+                  //   icon: Padding(
+                  //       padding: const EdgeInsets.only(top: 3.0, right: 0),
+                  //       // child: Icon(MyFlutterApp.home, size: 23.5),
+                  //       child: Icon(
+                  //         Icons.message,
+                  //       )),
+                  //   label: 'Posts 2',
+                  // ),
                   BottomNavigationBarItem(
                     icon: Padding(
                       padding: const EdgeInsets.only(top: 3.0),
@@ -161,66 +176,47 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
   }
 
   _getStartTime() async {
-    ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
-    print('current time is: $ntpTime');
-    await firestore
-        .collection('startTime')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        Map<String, dynamic> data = doc.data()! as Map<String, dynamic>;
-        var timeStr = doc["time"];
-        var dateTime = DateFormat('dd/MM/yy').parse(timeStr);
-        // var dateTime = DateFormat('dd/MM/yy').parse('06/09/2018');
-        var dateNow = ntpTime.toUtc();
-        var duration = dateNow.difference(dateTime);
-        var _dd = duration.inDays;
-        //set old duration
+    var timeStr = "15/09/2022";
+    var dateTime = DateFormat('dd/MM/yy').parse(timeStr);
 
-        durationInDay = _dd;
-        if (_dd < 60) {
-          setState(() {
-            durationForMinutes = _dd;
-            isLoading = false;
-          });
-        } else {
-          var _fd = _dd % 60; // for getting time
-          var _hd = _dd / 60; // getting how much minute cycle done
-          var _hhd = _hd.toInt();
-          // print('startTime $_dd');
-          // print('startTime $_fd');
+    var dateNow = ntpTime.toUtc();
+    var duration = dateNow.difference(dateTime);
+    var _dd = duration.inDays;
 
-          // check hours cycle getter 24
-          if (_hhd < 24) {
-            setState(() {
-              durationForMinutes = _fd;
-              durationForHours = _hhd;
-              isLoading = false;
-            });
-          } else {
-            var _hhhd = _hhd % 24; // getting how much hours cycle done
-
-            setState(() {
-              durationForMinutes = _fd;
-              durationForHours = _hhhd;
-              isLoading = false;
-            });
-          }
-        }
-
-        //checking duration changes
-        if (oldDurationInDay != 0) {
-          if (oldDurationInDay != durationInDay) {
-            if (oldDurationInDay < durationInDay) {
-              RestartWidget.restartApp(context);
-            }
-          }
-        }
-
-        oldDurationInDay = durationInDay;
-        // print('duration.inDays ${duration.inDays}');
+    durationInDay = _dd;
+    if (_dd < 60) {
+      setState(() {
+        durationForMinutes = _dd;
+        isLoading = false;
       });
-    });
+    } else {
+      var _fd = _dd % 60; // for getting time
+      var _hd = _dd / 60; // getting how much minute cycle done
+      var _hhd = _hd.toInt();
+      // print('startTime $_dd');
+      // print('startTime $_fd');
+
+      // check hours cycle getter 24
+      if (_hhd < 24) {
+        setState(() {
+          durationForMinutes = _fd;
+          durationForHours = _hhd;
+          isLoading = false;
+        });
+      } else {
+        var _hhhd = _hhd % 24; // getting how much hours cycle done
+
+        setState(() {
+          durationForMinutes = _fd;
+          durationForHours = _hhhd;
+          isLoading = false;
+        });
+      }
+    }
+
+    oldDurationInDay = durationInDay;
+    // print('duration.inDays ${duration.inDays}');
+
     setState(() {
       isLoading = false;
     });

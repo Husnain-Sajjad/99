@@ -6,7 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:ntp/ntp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'firestore_methods.dart';
+import '../methods/firestore_methods.dart';
 
 class AddPost extends StatefulWidget {
   const AddPost({Key? key, this.durationInDay}) : super(key: key);
@@ -43,55 +43,55 @@ class _AddPostState extends State<AddPost> {
     }
   }
 
-  getNationalPost() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.getString('nationalPost') != null) {
-      setState(() {
-        nationalPost = prefs.getString('nationalPost')!;
-      });
-    }
-  }
+  // getNationalPost() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   if (prefs.getString('nationalPost') != null) {
+  //     setState(() {
+  //       nationalPost = prefs.getString('nationalPost')!;
+  //     });
+  //   }
+  // }
 
-  setNationalPost(String nationalPostValue) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      nationalPost = nationalPostValue.toString();
-      prefs.setString('nationalPost', nationalPost);
-    });
-  }
+  // setNationalPost(String nationalPostValue) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     nationalPost = nationalPostValue.toString();
+  //     prefs.setString('nationalPost', nationalPost);
+  //   });
+  // }
 
-  _startTimer() async {
-    timer = Timer.periodic(const Duration(minutes: 1), (Timer t) async {
-      var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
-      // var dateNow = DateTime.now();
-      setState(() {
-        durationForMinutes = 59 - ntpTime.minute;
-        durationForHours = 23 - ntpTime.hour;
-      });
-      durationForMinutes == 13 && durationForHours == 13
-          ? setNationalPost('0')
-          : null;
-    });
-  }
+  // _startTimer() async {
+  //   timer = Timer.periodic(const Duration(minutes: 1), (Timer t) async {
+  //     var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+  //     // var dateNow = DateTime.now();
+  //     setState(() {
+  //       durationForMinutes = 59 - ntpTime.minute;
+  //       durationForHours = 23 - ntpTime.hour;
+  //     });
+  //     // durationForMinutes == 13 && durationForHours == 13
+  //     //     ? setNationalPost('0')
+  //     //     : null;
+  //   });
+  // }
 
-  _initTimer() async {
-    var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
-    // if (!initialized)
-    setState(() {
-      durationForMinutes = 59 - ntpTime.minute;
-      durationForHours = 23 - ntpTime.hour;
-    });
-    durationForMinutes == 13 && durationForHours == 13
-        ? setNationalPost('0')
-        : null;
-  }
+  // _initTimer() async {
+  //   var ntpTime = await NTP.now(lookUpAddress: '1.amazon.pool.ntp.org');
+  //   // if (!initialized)
+  //   setState(() {
+  //     durationForMinutes = 59 - ntpTime.minute;
+  //     durationForHours = 23 - ntpTime.hour;
+  //   });
+  //   // durationForMinutes == 13 && durationForHours == 13
+  //   // ? setNationalPost('0')
+  //   // : null;
+  // }
 
   @override
   void initState() {
     super.initState();
-    _initTimer();
-    _startTimer();
-    getNationalPost();
+    // _initTimer();
+    // _startTimer();
+    // getNationalPost();
   }
 
   @override
@@ -118,7 +118,6 @@ class _AddPostState extends State<AddPost> {
                   : InkWell(
                       onTap: () {
                         sendPost();
-                        setNationalPost('1');
                       },
                       child: Container(
                         width: 200,
@@ -134,9 +133,6 @@ class _AddPostState extends State<AddPost> {
                       ),
                     ),
             ),
-            Text('minutes: ${durationForMinutes}'),
-            Text('hours: ${durationForHours}'),
-            Text('nationalPost: ${nationalPost}')
           ],
         ),
       ),

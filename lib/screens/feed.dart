@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/post.dart';
+import 'package:flutter_application_1/models/post.dart';
 import 'package:ntp/ntp.dart';
 import 'posts.dart';
 
@@ -58,7 +58,7 @@ class _FeedState extends State<Feed> {
     }
     loadDataStream = FirebaseFirestore.instance
         .collection('posts')
-        .where('time', isEqualTo: widget.durationInDay)
+        // .where('time', isEqualTo: widget.durationInDay)
         .snapshots()
         .listen((event) {
       for (var change in event.docChanges) {
@@ -100,19 +100,6 @@ class _FeedState extends State<Feed> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-      appBar: AppBar(
-        actions: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                Text('minutes: ${durationForMinutes}'),
-                Text('hours: ${durationForHours}'),
-              ],
-            ),
-          ),
-        ],
-      ),
       body: ListView.builder(
           itemCount: postsList.length,
           itemBuilder: (context, index) {
